@@ -7,7 +7,7 @@ setup(
     name='NlpToolkit-WordNet-Cy',
     version='1.0.0',
     packages=['WordNet', 'WordNet.Similarity'],
-    package_data={'WordNet': ['*.pxd', '*.pyx', '*.c'],
+    package_data={'WordNet': ['*.pxd', '*.pyx', '*.c', '*.py'],
                   'WordNet.Similarity': ['*.pxd', '*.pyx', '*.c']},
     url='https://github.com/olcaytaner/TurkishWordNet-Py',
     license='',
