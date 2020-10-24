@@ -5,7 +5,7 @@ setup(
     ext_modules=cythonize(["WordNet/*.pyx", "WordNet/Similarity/*.pyx"],
                           compiler_directives={'language_level': "3"}),
     name='NlpToolkit-WordNet-Cy',
-    version='1.0.0',
+    version='1.0.1',
     packages=['WordNet', 'WordNet.Similarity'],
     package_data={'WordNet': ['*.pxd', '*.pyx', '*.c', '*.py'],
                   'WordNet.Similarity': ['*.pxd', '*.pyx', '*.c']},
