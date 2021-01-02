@@ -12,7 +12,7 @@ setup(
     url='https://github.com/olcaytaner/TurkishWordNet-Py',
     license='',
     author='olcay',
-    author_email='olcaytaner@isikun.edu.tr',
+    author_email='olcay.yildiz@ozyegin.edu.tr',
     description='Turkish WordNet KeNet',
     install_requires=['NlpToolkit-MorphologicalAnalysis-Cy']
 )
