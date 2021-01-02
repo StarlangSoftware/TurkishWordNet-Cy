@@ -9,7 +9,7 @@ setup(
     packages=['WordNet', 'WordNet.Similarity'],
     package_data={'WordNet': ['*.pxd', '*.pyx', '*.c', '*.py'],
                   'WordNet.Similarity': ['*.pxd', '*.pyx', '*.c']},
-    url='https://github.com/olcaytaner/TurkishWordNet-Py',
+    url='https://github.com/StarlangSoftware/TurkishWordNet-Py',
     license='',
     author='olcay',
     author_email='olcay.yildiz@ozyegin.edu.tr',
