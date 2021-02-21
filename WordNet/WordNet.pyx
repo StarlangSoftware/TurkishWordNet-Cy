@@ -498,7 +498,7 @@ cdef class WordNet:
             A list of literal
         """
         cdef list result
-        cdef list possibleWords
+        cdef set possibleWords
         cdef str possibleWord
         result = []
         if parse.size() > 0:
@@ -534,7 +534,7 @@ cdef class WordNet:
             A list of SynSets
         """
         cdef list result
-        cdef list possibleWords
+        cdef set possibleWords
         cdef str possibleWord
         cdef list synSets
         result = []
@@ -630,9 +630,9 @@ cdef class WordNet:
             A list of literals
         """
         cdef list result
-        cdef list possibleWords1
-        cdef list possibleWords2
-        cdef list possibleWords3
+        cdef set possibleWords1
+        cdef set possibleWords2
+        cdef set possibleWords3
         cdef str possibleWord1, possibleWord2, possibleWord3
         result = []
         possibleWords1 = fsm.getPossibleWords(morphologicalParse1, metaParse1)
@@ -681,9 +681,9 @@ cdef class WordNet:
             A list of SynSets
         """
         cdef list result
-        cdef list possibleWords1
-        cdef list possibleWords2
-        cdef list possibleWords3
+        cdef set possibleWords1
+        cdef set possibleWords2
+        cdef set possibleWords3
         cdef str possibleWord1, possibleWord2, possibleWord3
         result = []
         possibleWords1 = fsm.getPossibleWords(morphologicalParse1, metaParse1)
