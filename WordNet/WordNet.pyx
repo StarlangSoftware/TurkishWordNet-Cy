@@ -1,6 +1,7 @@
 import xml.etree.ElementTree
 from collections import OrderedDict
 
+import pkg_resources
 from Dictionary.ExceptionalWord cimport ExceptionalWord
 from Dictionary.Pos import Pos
 from WordNet.InterlingualRelation cimport InterlingualRelation
@@ -25,7 +26,7 @@ cdef class WordNet:
         cdef Literal currentLiteral
         self.__exceptionList = {}
         if fileName is None:
-            fileName = "turkish_wordnet.xml"
+            fileName = pkg_resources.resource_filename(__name__, 'data/turkish_wordnet.xml')
         elif exceptionFileName is not None:
             self.readExceptionFile(exceptionFileName)
         self.__interlingualList = {}
