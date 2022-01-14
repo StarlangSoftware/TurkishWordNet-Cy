@@ -14,6 +14,7 @@ cdef class SynSet:
     cdef Synonym __synonym
     cdef list __relations
     cdef str __note
+    cdef str __wikiPage
     cdef int __bcs
 
     cpdef str getId(self)
@@ -33,6 +34,8 @@ cdef class SynSet:
     cpdef object getPos(self)
     cpdef setNote(self, str note)
     cpdef str getNote(self)
+    cpdef setWikiPage(self, str wikiPage)
+    cpdef str getWikiPage(self)
     cpdef addRelation(self, Relation relation)
     cpdef removeRelation(self, relationOrName)
     cpdef Relation getRelation(self, int index)
