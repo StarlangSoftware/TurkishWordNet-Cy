@@ -83,7 +83,8 @@ cdef class SynSet:
         definition : str
             String definition
         """
-        self.__definition = definition.split("|")
+        if definition is not None:
+            self.__definition = definition.split("|")
 
     cpdef removeDefinition(self, str definition):
         """
