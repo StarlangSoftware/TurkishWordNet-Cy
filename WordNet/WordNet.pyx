@@ -11,7 +11,9 @@ from WordNet.SemanticRelationType import SemanticRelationType
 
 cdef class WordNet:
 
-    def __init__(self, fileName: str = None, exceptionFileName: str = None):
+    def __init__(self,
+                 fileName: str = None,
+                 exceptionFileName: str = None):
         """
         Constructor that initializes the SynSet list, literal list, reads exception.
 
@@ -20,85 +22,85 @@ cdef class WordNet:
         fileName : str
             Resource to be read for the WordNet.
         """
-        cdef SynSet currentSynSet
-        cdef str interlingualId
-        cdef list synSetList
-        cdef Literal currentLiteral
-        self.__exceptionList = {}
+        cdef SynSet current_syn_set
+        cdef str interlingual_id
+        cdef list syn_set_list
+        cdef Literal current_literal
+        self.__exception_list = {}
         if fileName is None:
             fileName = pkg_resources.resource_filename(__name__, 'data/turkish_wordnet.xml')
         elif exceptionFileName is not None:
             self.readExceptionFile(exceptionFileName)
-        self.__interlingualList = {}
-        self.__synSetList = OrderedDict()
-        self.__literalList = OrderedDict()
+        self.__interlingual_list = {}
+        self.__syn_set_list = OrderedDict()
+        self.__literal_list = OrderedDict()
         root = xml.etree.ElementTree.parse(fileName).getroot()
-        currentSynSet = None
-        for synSetNode in root:
-            for partNode in synSetNode:
-                if partNode.tag == "ID":
-                    currentSynSet = SynSet(partNode.text)
-                    self.addSynSet(currentSynSet)
-                elif partNode.tag == "DEF":
-                    currentSynSet.setDefinition(partNode.text)
-                elif partNode.tag == "EXAMPLE":
-                    currentSynSet.setExample(partNode.text)
-                elif partNode.tag == "WIKI":
-                    currentSynSet.setWikiPage(partNode.text)
-                elif partNode.tag == "BCS":
-                    currentSynSet.setBcs(int(partNode.text))
-                elif partNode.tag == "POS":
-                    if partNode.text == "a":
-                        currentSynSet.setPos(Pos.ADJECTIVE)
-                    elif partNode.text == "v":
-                        currentSynSet.setPos(Pos.VERB)
-                    elif partNode.text == "b":
-                        currentSynSet.setPos(Pos.ADVERB)
-                    elif partNode.text == "n":
-                        currentSynSet.setPos(Pos.NOUN)
-                    elif partNode.text == "i":
-                        currentSynSet.setPos(Pos.INTERJECTION)
-                    elif partNode.text == "c":
-                        currentSynSet.setPos(Pos.CONJUNCTION)
-                    elif partNode.text == "p":
-                        currentSynSet.setPos(Pos.PREPOSITION)
-                    elif partNode.text == "r":
-                        currentSynSet.setPos(Pos.PRONOUN)
-                elif partNode.tag == "SR":
-                    if len(partNode) > 0 and partNode[0].tag == "TYPE":
-                        typeNode = partNode[0]
-                        if len(partNode) > 1 and partNode[1].tag == "TO":
-                            toNode = partNode[1]
-                            currentSynSet.addRelation(SemanticRelation(partNode.text, typeNode.text, int(toNode.text)))
+        current_syn_set = None
+        for syn_set_node in root:
+            for part_node in syn_set_node:
+                if part_node.tag == "ID":
+                    current_syn_set = SynSet(part_node.text)
+                    self.addSynSet(current_syn_set)
+                elif part_node.tag == "DEF":
+                    current_syn_set.setDefinition(part_node.text)
+                elif part_node.tag == "EXAMPLE":
+                    current_syn_set.setExample(part_node.text)
+                elif part_node.tag == "WIKI":
+                    current_syn_set.setWikiPage(part_node.text)
+                elif part_node.tag == "BCS":
+                    current_syn_set.setBcs(int(part_node.text))
+                elif part_node.tag == "POS":
+                    if part_node.text == "a":
+                        current_syn_set.setPos(Pos.ADJECTIVE)
+                    elif part_node.text == "v":
+                        current_syn_set.setPos(Pos.VERB)
+                    elif part_node.text == "b":
+                        current_syn_set.setPos(Pos.ADVERB)
+                    elif part_node.text == "n":
+                        current_syn_set.setPos(Pos.NOUN)
+                    elif part_node.text == "i":
+                        current_syn_set.setPos(Pos.INTERJECTION)
+                    elif part_node.text == "c":
+                        current_syn_set.setPos(Pos.CONJUNCTION)
+                    elif part_node.text == "p":
+                        current_syn_set.setPos(Pos.PREPOSITION)
+                    elif part_node.text == "r":
+                        current_syn_set.setPos(Pos.PRONOUN)
+                elif part_node.tag == "SR":
+                    if len(part_node) > 0 and part_node[0].tag == "TYPE":
+                        type_node = part_node[0]
+                        if len(part_node) > 1 and part_node[1].tag == "TO":
+                            to_node = part_node[1]
+                            current_syn_set.addRelation(SemanticRelation(part_node.text, type_node.text, int(to_node.text)))
                         else:
-                            currentSynSet.addRelation(SemanticRelation(partNode.text, typeNode.text))
-                elif partNode.tag == "ILR":
-                    if len(partNode) > 0 and partNode[0].tag == "TYPE":
-                        typeNode = partNode[0]
-                        interlingualId = partNode.text
-                        if interlingualId in self.__interlingualList:
-                            synSetList = self.__interlingualList[interlingualId]
+                            current_syn_set.addRelation(SemanticRelation(part_node.text, type_node.text))
+                elif part_node.tag == "ILR":
+                    if len(part_node) > 0 and part_node[0].tag == "TYPE":
+                        type_node = part_node[0]
+                        interlingual_id = part_node.text
+                        if interlingual_id in self.__interlingual_list:
+                            syn_set_list = self.__interlingual_list[interlingual_id]
                         else:
-                            synSetList = []
-                        synSetList.append(currentSynSet)
-                        self.__interlingualList[interlingualId] = synSetList
-                        currentSynSet.addRelation(InterlingualRelation(interlingualId, typeNode.text))
-                elif partNode.tag == "SYNONYM":
-                    for literalNode in partNode:
-                        currentLiteral = None
-                        for childNode in literalNode:
-                            if childNode.tag == "SENSE":
-                                currentLiteral = Literal(literalNode.text, int(childNode.text), currentSynSet.getId())
-                                currentSynSet.addLiteral(currentLiteral)
-                                self.addLiteralToLiteralList(currentLiteral)
-                            elif childNode.tag == "SR":
-                                typeNode = childNode[0]
-                                if len(childNode) > 1 and childNode[1].tag == "TO":
-                                    toNode = childNode[1]
-                                    currentLiteral.addRelation(
-                                        SemanticRelation(childNode.text, typeNode.text, int(toNode.text)))
+                            syn_set_list = []
+                        syn_set_list.append(current_syn_set)
+                        self.__interlingual_list[interlingual_id] = syn_set_list
+                        current_syn_set.addRelation(InterlingualRelation(interlingual_id, type_node.text))
+                elif part_node.tag == "SYNONYM":
+                    for literal_node in part_node:
+                        current_literal = None
+                        for child_node in literal_node:
+                            if child_node.tag == "SENSE":
+                                current_literal = Literal(literal_node.text, int(child_node.text), current_syn_set.getId())
+                                current_syn_set.addLiteral(current_literal)
+                                self.addLiteralToLiteralList(current_literal)
+                            elif child_node.tag == "SR":
+                                type_node = child_node[0]
+                                if len(child_node) > 1 and child_node[1].tag == "TO":
+                                    to_node = child_node[1]
+                                    current_literal.addRelation(
+                                        SemanticRelation(child_node.text, type_node.text, int(to_node.text)))
                                 else:
-                                    currentLiteral.addRelation(SemanticRelation(childNode.text, typeNode.text))
+                                    current_literal.addRelation(SemanticRelation(child_node.text, type_node.text))
 
     cpdef readExceptionFile(self, str exceptionFileName):
         """
@@ -110,28 +112,28 @@ cdef class WordNet:
         exceptionFileName : str
             Exception file to be read
         """
-        cdef str wordName, rootForm
-        cdef list wordList
+        cdef str word_name, root_form
+        cdef list word_list
         root = xml.etree.ElementTree.parse(exceptionFileName).getroot()
-        for wordNode in root:
-            wordName = wordNode.attrib["name"]
-            rootForm = wordNode.attrib["root"]
-            if wordNode.attrib["pos"] == "Adj":
+        for word_node in root:
+            word_name = word_node.attrib["name"]
+            root_form = word_node.attrib["root"]
+            if word_node.attrib["pos"] == "Adj":
                 pos = Pos.ADJECTIVE
-            elif wordNode.attrib["pos"] == "Adv":
+            elif word_node.attrib["pos"] == "Adv":
                 pos = Pos.ADVERB
-            elif wordNode.attrib["pos"] == "Noun":
+            elif word_node.attrib["pos"] == "Noun":
                 pos = Pos.NOUN
-            elif wordNode.attrib["pos"] == "Verb":
+            elif word_node.attrib["pos"] == "Verb":
                 pos = Pos.VERB
             else:
                 pos = Pos.NOUN
-            if wordName in self.__exceptionList:
-                wordList = self.__exceptionList[wordName]
+            if word_name in self.__exception_list:
+                wordList = self.__exception_list[word_name]
             else:
                 wordList = []
-            wordList.append(ExceptionalWord(wordName, rootForm, pos))
-            self.__exceptionList[wordName] = wordList
+            wordList.append(ExceptionalWord(word_name, root_form, pos))
+            self.__exception_list[word_name] = wordList
 
     cpdef addLiteralToLiteralList(self, Literal literal):
         """
@@ -143,12 +145,12 @@ cdef class WordNet:
             literal to be added
         """
         cdef list literals
-        if literal.getName() in self.__literalList:
-            literals = self.__literalList[literal.getName()]
+        if literal.getName() in self.__literal_list:
+            literals = self.__literal_list[literal.getName()]
         else:
             literals = []
         literals.append(literal)
-        self.__literalList[literal.getName()] = literals
+        self.__literal_list[literal.getName()] = literals
 
     cpdef list synSetList(self):
         """
@@ -159,7 +161,7 @@ cdef class WordNet:
         list
             Values of the SynSet list
         """
-        return list(self.__synSetList.values())
+        return list(self.__syn_set_list.values())
 
     cpdef list literalList(self):
         """
@@ -170,7 +172,7 @@ cdef class WordNet:
         list
             Keys of the literal list
         """
-        return list(self.__literalList.keys())
+        return list(self.__literal_list.keys())
 
     cpdef addSynSet(self, SynSet synSet):
         """
@@ -181,7 +183,7 @@ cdef class WordNet:
         synSet : SynSet
             SynSet to be added
         """
-        self.__synSetList[synSet.getId()] = synSet
+        self.__syn_set_list[synSet.getId()] = synSet
 
     cpdef removeSynSet(self, SynSet synSet):
         """
@@ -192,9 +194,11 @@ cdef class WordNet:
         synSet : SynSet
             SynSet to be removed
         """
-        self.__synSetList.pop(synSet.getId())
+        self.__syn_set_list.pop(synSet.getId())
 
-    cpdef changeSynSetId(self, SynSet synSet, str newId):
+    cpdef changeSynSetId(self,
+                         SynSet synSet,
+                         str newId):
         """
         Changes ID of a specified SynSet with the specified new ID.
 
@@ -205,9 +209,9 @@ cdef class WordNet:
         newId : str
             new ID
         """
-        self.__synSetList.pop(synSet.getId())
+        self.__syn_set_list.pop(synSet.getId())
         synSet.setId(newId)
-        self.__synSetList[newId] = synSet
+        self.__syn_set_list[newId] = synSet
 
     cpdef SynSet getSynSetWithId(self, str synSetId):
         """
@@ -223,12 +227,14 @@ cdef class WordNet:
         SynSet
             SynSet with the specified SynSet ID
         """
-        if synSetId in self.__synSetList:
-            return self.__synSetList[synSetId]
+        if synSetId in self.__syn_set_list:
+            return self.__syn_set_list[synSetId]
         else:
             return None
 
-    cpdef SynSet getSynSetWithLiteral(self, str literal, int sense):
+    cpdef SynSet getSynSetWithLiteral(self,
+                                      str literal,
+                                      int sense):
         """
         Returns SynSet with the specified literal and sense index.
 
@@ -246,8 +252,8 @@ cdef class WordNet:
         """
         cdef list literals
         cdef Literal current
-        if literal in self.__literalList:
-            literals = self.__literalList[literal]
+        if literal in self.__literal_list:
+            literals = self.__literal_list[literal]
             for current in literals:
                 if current.getSense() == sense:
                     return self.getSynSetWithId(current.getSynSetId())
@@ -267,8 +273,8 @@ cdef class WordNet:
         int
             The number of SynSets with a specified literal
         """
-        if literal in self.__literalList:
-            return len(self.__literalList[literal])
+        if literal in self.__literal_list:
+            return len(self.__literal_list[literal])
         else:
             return 0
 
@@ -287,11 +293,11 @@ cdef class WordNet:
             A list of SynSets with a specified part of speech tag
         """
         cdef list result
-        cdef SynSet synSet
+        cdef SynSet syn_set
         result = []
-        for synSet in self.__synSetList.values():
-            if synSet.getPos() is not None and synSet.getPos() == pos:
-                result.append(synSet)
+        for syn_set in self.__syn_set_list.values():
+            if syn_set.getPos() is not None and syn_set.getPos() == pos:
+                result.append(syn_set)
         return result
 
     cpdef list getLiteralsWithName(self, str literal):
@@ -308,12 +314,15 @@ cdef class WordNet:
         list
             A list of literals with a specified literal String
         """
-        if literal in self.__literalList:
-            return self.__literalList[literal]
+        if literal in self.__literal_list:
+            return self.__literal_list[literal]
         else:
             return []
 
-    cpdef addSynSetsWithLiteralToList(self, list result, str literal, object pos):
+    cpdef addSynSetsWithLiteralToList(self,
+                                      list result,
+                                      str literal,
+                                      object pos):
         """
         Finds the SynSet with specified literal String and part of speech tag and adds to the given SynSet list.
 
@@ -327,11 +336,11 @@ cdef class WordNet:
             part of speech tag to be searched in SynSets
         """
         cdef Literal current
-        cdef SynSet synSet
-        for current in self.__literalList[literal]:
-            synSet = self.getSynSetWithId(current.getSynSetId)
-            if synSet is not None and synSet.getPos() == pos:
-                result.append(synSet)
+        cdef SynSet syn_set
+        for current in self.__literal_list[literal]:
+            syn_set = self.getSynSetWithId(current.getSynSetId)
+            if syn_set is not None and syn_set.getPos() == pos:
+                result.append(syn_set)
 
     cpdef list getSynSetsWithLiteral(self, str literal):
         """
@@ -349,13 +358,13 @@ cdef class WordNet:
         """
         cdef list result
         cdef Literal current
-        cdef SynSet synSet
+        cdef SynSet syn_set
         result = []
-        if literal in self.__literalList:
-            for current in self.__literalList[literal]:
-                synSet = self.getSynSetWithId(current.getSynSetId())
-                if synSet is not None:
-                    result.append(synSet)
+        if literal in self.__literal_list:
+            for current in self.__literal_list[literal]:
+                syn_set = self.getSynSetWithId(current.getSynSetId())
+                if syn_set is not None:
+                    result.append(syn_set)
         return result
 
     cpdef list getLiteralsWithPossibleModifiedLiteral(self, str literal):
@@ -374,34 +383,36 @@ cdef class WordNet:
             Returns a list of literals with specified literal String
         """
         cdef list result
-        cdef str wordWithoutLastOne, wordWithoutLastTwo, wordWithoutLastThree
+        cdef str word_without_last_one, word_without_last_two, word_without_last_three
         result = [literal]
-        wordWithoutLastOne = literal[:len(literal) - 1]
-        wordWithoutLastTwo = literal[:len(literal) - 2]
-        wordWithoutLastThree = literal[:len(literal) - 3]
-        if literal in self.__exceptionList:
-            for exceptionalWord in self.__exceptionList[literal]:
-                result.append(exceptionalWord.getRoot())
-        if literal.endswith("s") and wordWithoutLastOne in self.__literalList:
-            result.append(wordWithoutLastOne)
+        word_without_last_one = literal[:len(literal) - 1]
+        word_without_last_two = literal[:len(literal) - 2]
+        word_without_last_three = literal[:len(literal) - 3]
+        if literal in self.__exception_list:
+            for exceptional_word in self.__exception_list[literal]:
+                result.append(exceptional_word.getRoot())
+        if literal.endswith("s") and word_without_last_one in self.__literal_list:
+            result.append(word_without_last_one)
         if (literal.endswith("es") or literal.endswith("ed") or literal.endswith("er")) \
-                and wordWithoutLastTwo in self.__literalList:
-            result.append(wordWithoutLastTwo)
-        if literal.endswith("ed") and (wordWithoutLastTwo + literal[len(literal) - 3]) in self.__literalList:
-            result.append(wordWithoutLastTwo + literal[len(literal) - 3])
-        if (literal.endswith("ed") or literal.endswith("er")) and (wordWithoutLastTwo + "e") in self.__literalList:
-            result.append(wordWithoutLastTwo + "e")
-        if (literal.endswith("ing") or literal.endswith("est")) and wordWithoutLastThree in self.__literalList:
-            result.append(wordWithoutLastThree)
-        if literal.endswith("ing") and (wordWithoutLastThree + literal[len(literal) - 4]) in self.__literalList:
-            result.append(wordWithoutLastThree + literal[len(literal) - 4])
-        if (literal.endswith("ing") or literal.endswith("est")) and (wordWithoutLastThree + "e") in self.__literalList:
-            result.append(wordWithoutLastThree + "e")
-        if literal.endswith("ies") and (wordWithoutLastThree + "y") in self.__literalList:
-            result.append(wordWithoutLastThree + "y")
+                and word_without_last_two in self.__literal_list:
+            result.append(word_without_last_two)
+        if literal.endswith("ed") and (word_without_last_two + literal[len(literal) - 3]) in self.__literal_list:
+            result.append(word_without_last_two + literal[len(literal) - 3])
+        if (literal.endswith("ed") or literal.endswith("er")) and (word_without_last_two + "e") in self.__literal_list:
+            result.append(word_without_last_two + "e")
+        if (literal.endswith("ing") or literal.endswith("est")) and word_without_last_three in self.__literal_list:
+            result.append(word_without_last_three)
+        if literal.endswith("ing") and (word_without_last_three + literal[len(literal) - 4]) in self.__literal_list:
+            result.append(word_without_last_three + literal[len(literal) - 4])
+        if (literal.endswith("ing") or literal.endswith("est")) and (word_without_last_three + "e") in self.__literal_list:
+            result.append(word_without_last_three + "e")
+        if literal.endswith("ies") and (word_without_last_three + "y") in self.__literal_list:
+            result.append(word_without_last_three + "y")
         return result
 
-    cpdef list getSynSetsWithPossiblyModifiedLiteral(self, str literal, object pos):
+    cpdef list getSynSetsWithPossiblyModifiedLiteral(self,
+                                                     str literal,
+                                                     object pos):
         """
         Finds SynSets with specified literal String and part of speech tag, then adds to the newly created SynSet list.
         Ex: cleanest - clean
@@ -419,16 +430,18 @@ cdef class WordNet:
             Returns a list of SynSets with specified literal String and part of speech tag
         """
         cdef list result
-        cdef list modifiedLiterals
-        cdef str modifiedLiteral
+        cdef list modified_literals
+        cdef str modified_literal
         result = []
-        modifiedLiterals = self.getLiteralsWithPossibleModifiedLiteral(literal)
-        for modifiedLiteral in modifiedLiterals:
-            if modifiedLiteral in self.__literalList:
-                self.addSynSetsWithLiteralToList(result, modifiedLiteral, pos)
+        modified_literals = self.getLiteralsWithPossibleModifiedLiteral(literal)
+        for modified_literal in modified_literals:
+            if modified_literal in self.__literal_list:
+                self.addSynSetsWithLiteralToList(result, modified_literal, pos)
         return result
 
-    cpdef addReverseRelation(self, SynSet synSet, SemanticRelation semanticRelation):
+    cpdef addReverseRelation(self,
+                             SynSet synSet,
+                             SemanticRelation semanticRelation):
         """
         Adds the reverse relations to the SynSet.
 
@@ -439,16 +452,18 @@ cdef class WordNet:
         semanticRelation : SemanticRelation
             relation whose reverse will be added
         """
-        cdef SynSet otherSynSet
-        cdef SemanticRelation otherRelation
-        otherSynSet = self.getSynSetWithId(semanticRelation.getName())
-        if otherSynSet is not None and SemanticRelation.reverse(semanticRelation.getRelationType()) is not None:
-            otherRelation = SemanticRelation(synSet.getId(),
+        cdef SynSet other_syn_set
+        cdef SemanticRelation other_relation
+        other_syn_set = self.getSynSetWithId(semanticRelation.getName())
+        if other_syn_set is not None and SemanticRelation.reverse(semanticRelation.getRelationType()) is not None:
+            other_relation = SemanticRelation(synSet.getId(),
                                              SemanticRelation.reverse(semanticRelation.getRelationType()))
-            if not otherSynSet.containsRelation(otherRelation):
-                otherSynSet.addRelation(otherRelation)
+            if not other_syn_set.containsRelation(other_relation):
+                other_syn_set.addRelation(other_relation)
 
-    cpdef removeReverseRelation(self, SynSet synSet, SemanticRelation semanticRelation):
+    cpdef removeReverseRelation(self,
+                                SynSet synSet,
+                                SemanticRelation semanticRelation):
         """
         Removes the reverse relations from the SynSet.
 
@@ -459,28 +474,31 @@ cdef class WordNet:
         semanticRelation : SemanticRelation
             relation whose reverse will be removed
         """
-        cdef SynSet otherSynSet
-        cdef SemanticRelation otherRelation
-        otherSynSet = self.getSynSetWithId(semanticRelation.getName())
-        if otherSynSet is not None and SemanticRelation.reverse(semanticRelation.getRelationType()) is not None:
-            otherRelation = SemanticRelation(synSet.getId(),
+        cdef SynSet other_syn_set
+        cdef SemanticRelation other_relation
+        other_syn_set = self.getSynSetWithId(semanticRelation.getName())
+        if other_syn_set is not None and SemanticRelation.reverse(semanticRelation.getRelationType()) is not None:
+            other_relation = SemanticRelation(synSet.getId(),
                                              SemanticRelation.reverse(semanticRelation.getRelationType()))
-            if otherSynSet.containsRelation(otherRelation):
-                otherSynSet.removeRelation(otherRelation)
+            if other_syn_set.containsRelation(other_relation):
+                other_syn_set.removeRelation(other_relation)
 
     cpdef equalizeSemanticRelations(self):
         """
         Loops through the SynSet list and adds the possible reverse relations.
         """
-        cdef SynSet synSet
+        cdef SynSet syn_set
         cdef int i
-        for synSet in self.__synSetList.values():
-            for i in range(synSet.relationSize()):
-                if isinstance(synSet.getRelation(i), SemanticRelation):
-                    self.addReverseRelation(synSet, synSet.getRelation(i))
+        for syn_set in self.__syn_set_list.values():
+            for i in range(syn_set.relationSize()):
+                if isinstance(syn_set.getRelation(i), SemanticRelation):
+                    self.addReverseRelation(syn_set, syn_set.getRelation(i))
 
-    cpdef constructLiterals(self, str word, MorphologicalParse parse, MetamorphicParse metaParse,
-                          FsmMorphologicalAnalyzer fsm):
+    cpdef constructLiterals(self,
+                            str word,
+                            MorphologicalParse parse,
+                            MetamorphicParse metaParse,
+                            FsmMorphologicalAnalyzer fsm):
         """
         Creates a list of literals with a specified word, or possible words corresponding to morphological parse.
 
@@ -501,22 +519,25 @@ cdef class WordNet:
             A list of literal
         """
         cdef list result
-        cdef set possibleWords
-        cdef str possibleWord
+        cdef set possible_words
+        cdef str possible_word
         result = []
         if parse.size() > 0:
             if not parse.isPunctuation() and not parse.isCardinal() and not parse.isReal():
-                possibleWords = fsm.getPossibleWords(parse, metaParse)
-                for possibleWord in possibleWords:
-                    result.extend(self.getLiteralsWithName(possibleWord))
+                possible_words = fsm.getPossibleWords(parse, metaParse)
+                for possible_word in possible_words:
+                    result.extend(self.getLiteralsWithName(possible_word))
             else:
                 result.extend(self.getLiteralsWithName(word))
         else:
             result.extend(self.getLiteralsWithName(word))
         return result
 
-    cpdef list constructSynSets(self, str word, MorphologicalParse parse, MetamorphicParse metaParse,
-                         FsmMorphologicalAnalyzer fsm):
+    cpdef list constructSynSets(self,
+                                str word,
+                                MorphologicalParse parse,
+                                MetamorphicParse metaParse,
+                                FsmMorphologicalAnalyzer fsm):
         """
         Creates a list of SynSets with a specified word, or possible words corresponding to morphological parse.
 
@@ -537,9 +558,9 @@ cdef class WordNet:
             A list of SynSets
         """
         cdef list result
-        cdef set possibleWords
-        cdef str possibleWord
-        cdef list synSets
+        cdef set possible_words
+        cdef str possible_word
+        cdef list syn_sets
         result = []
         if parse.size() > 0:
             if parse.isProperNoun():
@@ -563,37 +584,37 @@ cdef class WordNet:
             if parse.isReal():
                 result.append(self.getSynSetWithLiteral("(reel sayı)", 1))
             if not parse.isPunctuation() and not parse.isCardinal() and not parse.isReal():
-                possibleWords = fsm.getPossibleWords(parse, metaParse)
-                for possibleWord in possibleWords:
-                    synSets = self.getSynSetsWithLiteral(possibleWord)
-                    if len(synSets) > 0:
-                        for synSet in synSets:
-                            if synSet.getPos() is not None and (parse.getPos() == "NOUN" or parse.getPos() == "ADVERB"
+                possible_words = fsm.getPossibleWords(parse, metaParse)
+                for possible_word in possible_words:
+                    syn_sets = self.getSynSetsWithLiteral(possible_word)
+                    if len(syn_sets) > 0:
+                        for syn_set in syn_sets:
+                            if syn_set.getPos() is not None and (parse.getPos() == "NOUN" or parse.getPos() == "ADVERB"
                                                                 or parse.getPos() == "VERB" or parse.getPos() == "ADJ"
                                                                 or parse.getPos() == "CONJ"):
-                                if synSet.getPos() == Pos.NOUN:
+                                if syn_set.getPos() == Pos.NOUN:
                                     if parse.getPos() == "NOUN" or parse.getRootPos() == "NOUN":
-                                        result.append(synSet)
-                                elif synSet.getPos() == Pos.ADVERB:
+                                        result.append(syn_set)
+                                elif syn_set.getPos() == Pos.ADVERB:
                                     if parse.getPos() == "ADVERB" or parse.getRootPos() == "ADVERB":
-                                        result.append(synSet)
-                                elif synSet.getPos() == Pos.VERB:
+                                        result.append(syn_set)
+                                elif syn_set.getPos() == Pos.VERB:
                                     if parse.getPos() == "VERB" or parse.getRootPos() == "VERB":
-                                        result.append(synSet)
-                                elif synSet.getPos() == Pos.ADJECTIVE:
+                                        result.append(syn_set)
+                                elif syn_set.getPos() == Pos.ADJECTIVE:
                                     if parse.getPos() == "ADJ" or parse.getRootPos() == "ADJ":
-                                        result.append(synSet)
-                                elif synSet.getPos() == Pos.CONJUNCTION:
+                                        result.append(syn_set)
+                                elif syn_set.getPos() == Pos.CONJUNCTION:
                                     if parse.getPos() == "CONJ" or parse.getRootPos() == "CONJ":
-                                        result.append(synSet)
+                                        result.append(syn_set)
                                 else:
-                                    result.append(synSet)
+                                    result.append(syn_set)
                             else:
-                                result.append(synSet)
+                                result.append(syn_set)
                 if len(result) == 0:
-                    for possibleWord in possibleWords:
-                        synSets = self.getSynSetsWithLiteral(possibleWord)
-                        result.extend(synSets)
+                    for possible_word in possible_words:
+                        syn_sets = self.getSynSetsWithLiteral(possible_word)
+                        result.extend(syn_sets)
             else:
                 result.extend(self.getSynSetsWithLiteral(word))
             if parse.isCardinal() and len(result) == 0:
@@ -602,10 +623,14 @@ cdef class WordNet:
             result.extend(self.getSynSetsWithLiteral(word))
         return result
 
-    cpdef list constructIdiomLiterals(self, FsmMorphologicalAnalyzer fsm, MorphologicalParse morphologicalParse1,
-                               MetamorphicParse metaParse1, MorphologicalParse morphologicalParse2,
-                               MetamorphicParse metaParse2, MorphologicalParse morphologicalParse3 = None,
-                               MetamorphicParse metaParse3 = None):
+    cpdef list constructIdiomLiterals(self,
+                                      FsmMorphologicalAnalyzer fsm,
+                                      MorphologicalParse morphologicalParse1,
+                                      MetamorphicParse metaParse1,
+                                      MorphologicalParse morphologicalParse2,
+                                      MetamorphicParse metaParse2,
+                                      MorphologicalParse morphologicalParse3 = None,
+                                      MetamorphicParse metaParse3 = None):
         """
         Returns a list of literals using 3 possible words gathered with the specified morphological parses and
         metamorphic parses.
@@ -633,30 +658,34 @@ cdef class WordNet:
             A list of literals
         """
         cdef list result
-        cdef set possibleWords1
-        cdef set possibleWords2
-        cdef set possibleWords3
-        cdef str possibleWord1, possibleWord2, possibleWord3
+        cdef set possible_words1
+        cdef set possible_words2
+        cdef set possible_words3
+        cdef str possible_word1, possible_word2, possible_word3
         result = []
-        possibleWords1 = fsm.getPossibleWords(morphologicalParse1, metaParse1)
-        possibleWords2 = fsm.getPossibleWords(morphologicalParse2, metaParse2)
+        possible_words1 = fsm.getPossibleWords(morphologicalParse1, metaParse1)
+        possible_words2 = fsm.getPossibleWords(morphologicalParse2, metaParse2)
         if morphologicalParse3 is not None and metaParse3 is not None:
-            possibleWords3 = fsm.getPossibleWords(morphologicalParse3, metaParse3)
-            for possibleWord1 in possibleWords1:
-                for possibleWord2 in possibleWords2:
-                    for possibleWord3 in possibleWords3:
-                        result.extend(self.getLiteralsWithName(possibleWord1 + " " + possibleWord2 +
-                                                               " " + possibleWord3))
+            possible_words3 = fsm.getPossibleWords(morphologicalParse3, metaParse3)
+            for possible_word1 in possible_words1:
+                for possible_word2 in possible_words2:
+                    for possible_word3 in possible_words3:
+                        result.extend(self.getLiteralsWithName(possible_word1 + " " + possible_word2 +
+                                                               " " + possible_word3))
         else:
-            for possibleWord1 in possibleWords1:
-                for possibleWord2 in possibleWords2:
-                    result.extend(self.getLiteralsWithName(possibleWord1 + " " + possibleWord2))
+            for possible_word1 in possible_words1:
+                for possible_word2 in possible_words2:
+                    result.extend(self.getLiteralsWithName(possible_word1 + " " + possible_word2))
         return result
 
-    cpdef list constructIdiomSynSets(self, FsmMorphologicalAnalyzer fsm, MorphologicalParse morphologicalParse1,
-                              MetamorphicParse metaParse1, MorphologicalParse morphologicalParse2,
-                              MetamorphicParse metaParse2, MorphologicalParse morphologicalParse3 = None,
-                              MetamorphicParse metaParse3 = None):
+    cpdef list constructIdiomSynSets(self,
+                                     FsmMorphologicalAnalyzer fsm,
+                                     MorphologicalParse morphologicalParse1,
+                                     MetamorphicParse metaParse1,
+                                     MorphologicalParse morphologicalParse2,
+                                     MetamorphicParse metaParse2,
+                                     MorphologicalParse morphologicalParse3 = None,
+                                     MetamorphicParse metaParse3 = None):
         """
         Returns a list of SynSets using 3 possible words gathered with the specified morphological parses and
         metamorphic parses.
@@ -684,27 +713,27 @@ cdef class WordNet:
             A list of SynSets
         """
         cdef list result
-        cdef set possibleWords1
-        cdef set possibleWords2
-        cdef set possibleWords3
-        cdef str possibleWord1, possibleWord2, possibleWord3
+        cdef set possible_words1
+        cdef set possible_words2
+        cdef set possible_words3
+        cdef str possible_word1, possible_word2, possible_word3
         result = []
-        possibleWords1 = fsm.getPossibleWords(morphologicalParse1, metaParse1)
-        possibleWords2 = fsm.getPossibleWords(morphologicalParse2, metaParse2)
+        possible_words1 = fsm.getPossibleWords(morphologicalParse1, metaParse1)
+        possible_words2 = fsm.getPossibleWords(morphologicalParse2, metaParse2)
         if morphologicalParse3 is not None and metaParse3 is not None:
-            possibleWords3 = fsm.getPossibleWords(morphologicalParse3, metaParse3)
-            for possibleWord1 in possibleWords1:
-                for possibleWord2 in possibleWords2:
-                    for possibleWord3 in possibleWords3:
-                        if self.numberOfSynSetsWithLiteral(possibleWord1 + " " + possibleWord2 + " "
-                                                           + possibleWord3) > 0:
-                            result.extend(self.getSynSetsWithLiteral(possibleWord1 + " " + possibleWord2 +
-                                                                     " " + possibleWord3))
+            possible_words3 = fsm.getPossibleWords(morphologicalParse3, metaParse3)
+            for possible_word1 in possible_words1:
+                for possible_word2 in possible_words2:
+                    for possible_word3 in possible_words3:
+                        if self.numberOfSynSetsWithLiteral(possible_word1 + " " + possible_word2 + " "
+                                                           + possible_word3) > 0:
+                            result.extend(self.getSynSetsWithLiteral(possible_word1 + " " + possible_word2 +
+                                                                     " " + possible_word3))
         else:
-            for possibleWord1 in possibleWords1:
-                for possibleWord2 in possibleWords2:
-                    if self.numberOfSynSetsWithLiteral(possibleWord1 + " " + possibleWord2) > 0:
-                        result.extend(self.getSynSetsWithLiteral(possibleWord1 + " " + possibleWord2))
+            for possible_word1 in possible_words1:
+                for possible_word2 in possible_words2:
+                    if self.numberOfSynSetsWithLiteral(possible_word1 + " " + possible_word2) > 0:
+                        result.extend(self.getSynSetsWithLiteral(possible_word1 + " " + possible_word2))
         return result
 
     cpdef sortDefinitions(self):
@@ -712,7 +741,7 @@ cdef class WordNet:
         Sorts definitions of SynSets in SynSet list according to their lengths.
         """
         cdef SynSet synSet
-        for synSet in self.__synSetList:
+        for synSet in self.__syn_set_list:
             synSet.sortDefinitions()
 
     cpdef list getInterlingual(self, str synSetId):
@@ -729,12 +758,14 @@ cdef class WordNet:
         list
             A list of SynSets with the interlingual relations of a specified SynSet ID
         """
-        if synSetId in self.__interlingualList:
-            return self.__interlingualList[synSetId]
+        if synSetId in self.__interlingual_list:
+            return self.__interlingual_list[synSetId]
         else:
             return []
 
-    cpdef bint __containsSameLiteral(self, SynSet synSet1, SynSet synSet2):
+    cpdef bint __containsSameLiteral(self,
+                                     SynSet synSet1,
+                                     SynSet synSet2):
         cdef int i, j
         cdef Literal literal1, literal2
         for i in range(synSet1.getSynonym().literalSize()):
@@ -754,13 +785,13 @@ cdef class WordNet:
         fileName : str
             file name to write XML files
         """
-        cdef SynSet synSet
-        outFile = open(fileName, "w", encoding="utf8")
-        outFile.write("<SYNSETS>\n")
-        for synSet in self.__synSetList.values():
-            synSet.saveAsXml(outFile)
-        outFile.write("</SYNSETS>\n")
-        outFile.close()
+        cdef SynSet syn_set
+        out_file = open(fileName, "w", encoding="utf8")
+        out_file.write("<SYNSETS>\n")
+        for syn_set in self.__syn_set_list.values():
+            syn_set.saveAsXml(out_file)
+        out_file.write("</SYNSETS>\n")
+        out_file.close()
 
     cpdef int size(self):
         """
@@ -771,9 +802,11 @@ cdef class WordNet:
         int
             The size of the SynSet list
         """
-        return len(self.__synSetList)
+        return len(self.__syn_set_list)
 
-    cpdef int findPathLength(self, list pathToRootOfSynSet1, list pathToRootOfSynSet2):
+    cpdef int findPathLength(self,
+                             list pathToRootOfSynSet1,
+                             list pathToRootOfSynSet2):
         """
         Conduct common operations between similarity metrics.
 
@@ -789,14 +822,16 @@ cdef class WordNet:
         int
             Path length
         """
-        cdef int i, foundIndex
+        cdef int i, found_index
         for i in range(len(pathToRootOfSynSet1)):
             if pathToRootOfSynSet1[i] in pathToRootOfSynSet2:
-                foundIndex = pathToRootOfSynSet2.index(pathToRootOfSynSet1[i])
-                return i + foundIndex - 1
+                found_index = pathToRootOfSynSet2.index(pathToRootOfSynSet1[i])
+                return i + found_index - 1
         return -1
 
-    cpdef tuple __findLCS(self, list pathToRootOfSynSet1, list pathToRootOfSynSet2):
+    cpdef tuple __findLCS(self,
+                          list pathToRootOfSynSet1,
+                          list pathToRootOfSynSet2):
         """
         Returns depth and ID of the LCS.
 
@@ -813,14 +848,16 @@ cdef class WordNet:
             Depth and ID of the LCS
         """
         cdef int i
-        cdef str LCSid
+        cdef str lcs_id
         for i in range(len(pathToRootOfSynSet1)):
-            LCSid = pathToRootOfSynSet1[i]
-            if LCSid in pathToRootOfSynSet2:
-                return LCSid, len(pathToRootOfSynSet1) - i + 1
+            lcs_id = pathToRootOfSynSet1[i]
+            if lcs_id in pathToRootOfSynSet2:
+                return lcs_id, len(pathToRootOfSynSet1) - i + 1
         return None
 
-    cpdef int findLCSDepth(self, list pathToRootOfSynSet1, list pathToRootOfSynSet2):
+    cpdef int findLCSDepth(self,
+                           list pathToRootOfSynSet1,
+                           list pathToRootOfSynSet2):
         """
         Returns the depth of path.
 
@@ -843,7 +880,9 @@ cdef class WordNet:
         else:
             return -1
 
-    cpdef str findLCSid(self, list pathToRootOfSynSet1, list pathToRootOfSynSet2):
+    cpdef str findLCSid(self,
+                        list pathToRootOfSynSet1,
+                        list pathToRootOfSynSet2):
         """
         Returns the ID of LCS of path.
 
@@ -905,11 +944,11 @@ cdef class WordNet:
         list
             List of String corresponding to nodes in the path
         """
-        cdef list pathToRoot
-        pathToRoot = []
+        cdef list path_to_root
+        path_to_root = []
         while synSet is not None:
-            if synSet.getId() in pathToRoot:
+            if synSet.getId() in path_to_root:
                 break
-            pathToRoot.append(synSet.getId())
+            path_to_root.append(synSet.getId())
             synSet = self.percolateUp(synSet)
-        return pathToRoot
+        return path_to_root

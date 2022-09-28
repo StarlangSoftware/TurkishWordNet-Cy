@@ -15,8 +15,9 @@ cdef class IdMapping:
         cdef list items
         self.__map = {}
         if fileName is not None:
-            infile = open(fileName, "r", encoding="utf8")
-            lines = infile.readlines()
+            input_file = open(fileName, "r", encoding="utf8")
+            lines = input_file.readlines()
+            input_file.close()
             for line in lines:
                 items = line.split("->")
                 self.__map[items[0]] = items[1]
@@ -46,13 +47,13 @@ cdef class IdMapping:
         str
             Value of the specified key
         """
-        cdef str mappedId
+        cdef str mapped_id
         if _id not in self.__map:
             return None
-        mappedId = self.__map[_id]
-        while mappedId in self.__map:
-            mappedId = self.__map[mappedId]
-        return mappedId
+        mapped_id = self.__map[_id]
+        while mapped_id in self.__map:
+            mapped_id = self.__map[mapped_id]
+        return mapped_id
 
     cpdef str singleMap(self, str _id):
         """

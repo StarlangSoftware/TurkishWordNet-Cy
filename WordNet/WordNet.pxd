@@ -9,10 +9,10 @@ from WordNet.SynSet cimport SynSet
 
 cdef class WordNet:
 
-    cdef object __synSetList
-    cdef object __literalList
-    cdef dict __exceptionList
-    cdef dict __interlingualList
+    cdef object __syn_set_list
+    cdef object __literal_list
+    cdef dict __exception_list
+    cdef dict __interlingual_list
 
     cpdef readExceptionFile(self, str exceptionFileName)
     cpdef addLiteralToLiteralList(self, Literal literal)

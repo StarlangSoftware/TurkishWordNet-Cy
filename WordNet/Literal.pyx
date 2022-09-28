@@ -5,7 +5,10 @@ from WordNet.SemanticRelation cimport SemanticRelation
 
 cdef class Literal:
 
-    def __init__(self, name: str, sense: int, synSetId: str):
+    def __init__(self,
+                 name: str,
+                 sense: int,
+                 synSetId: str):
         """
         A constructor that initializes name, sense, SynSet ID and the relations.
 
@@ -20,7 +23,7 @@ cdef class Literal:
         """
         self.name = name
         self.sense = sense
-        self.synSetId = synSetId
+        self.syn_set_id = synSetId
         self.relations = []
         self.origin = None
 
@@ -49,7 +52,7 @@ cdef class Literal:
         str
             String of SynSet ID
         """
-        return self.synSetId
+        return self.syn_set_id
 
     cpdef str getName(self):
         """
@@ -212,7 +215,7 @@ cdef class Literal:
         synSetId : str
             SynSet ID of the literal to set
         """
-        self.synSetId = synSetId
+        self.syn_set_id = synSetId
 
     cpdef saveAsXml(self, outfile):
         """
@@ -250,4 +253,7 @@ cdef class Literal:
         str
             Concatenated names and senses of literals
         """
+        return self.name + " " + str(self.sense)
+
+    def __repr__(self):
         return self.name + " " + str(self.sense)

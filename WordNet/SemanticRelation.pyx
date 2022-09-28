@@ -3,27 +3,27 @@ from WordNet.SemanticRelationType import SemanticRelationType
 
 cdef class SemanticRelation(Relation):
 
-    semanticDependency = ["ANTONYM", "HYPERNYM", "INSTANCE_HYPERNYM", "HYPONYM", "INSTANCE_HYPONYM", "MEMBER_HOLONYM",
+    semantic_dependency = ["ANTONYM", "HYPERNYM", "INSTANCE_HYPERNYM", "HYPONYM", "INSTANCE_HYPONYM", "MEMBER_HOLONYM",
                           "SUBSTANCE_HOLONYM", "PART_HOLONYM", "MEMBER_MERONYM", "SUBSTANCE_MERONYM", "PART_MERONYM",
                           "ATTRIBUTE", "DERIVATION_RELATED", "DOMAIN_TOPIC", "MEMBER_TOPIC", "DOMAIN_REGION",
                           "MEMBER_REGION", "DOMAIN_USAGE", "MEMBER_USAGE", "ENTAILMENT", "CAUSE", "ALSO_SEE",
                           "VERB_GROUP", "SIMILAR_TO", "PARTICIPLE_OF_VERB"]
 
-    semanticDependencyTags = [SemanticRelationType.ANTONYM, SemanticRelationType.HYPERNYM,
-                              SemanticRelationType.INSTANCE_HYPERNYM, SemanticRelationType.HYPONYM,
-                              SemanticRelationType.INSTANCE_HYPONYM,
-                              SemanticRelationType.MEMBER_HOLONYM, SemanticRelationType.SUBSTANCE_HOLONYM,
-                              SemanticRelationType.PART_HOLONYM, SemanticRelationType.MEMBER_MERONYM,
-                              SemanticRelationType.SUBSTANCE_MERONYM, SemanticRelationType.PART_MERONYM,
-                              SemanticRelationType.ATTRIBUTE,
-                              SemanticRelationType.DERIVATION_RELATED, SemanticRelationType.DOMAIN_TOPIC,
-                              SemanticRelationType.MEMBER_TOPIC, SemanticRelationType.DOMAIN_REGION,
-                              SemanticRelationType.MEMBER_REGION,
-                              SemanticRelationType.DOMAIN_USAGE, SemanticRelationType.MEMBER_USAGE,
-                              SemanticRelationType.ENTAILMENT, SemanticRelationType.CAUSE,
-                              SemanticRelationType.ALSO_SEE,
-                              SemanticRelationType.VERB_GROUP, SemanticRelationType.SIMILAR_TO,
-                              SemanticRelationType.PARTICIPLE_OF_VERB]
+    semantic_dependency_tags = [SemanticRelationType.ANTONYM, SemanticRelationType.HYPERNYM,
+                                SemanticRelationType.INSTANCE_HYPERNYM, SemanticRelationType.HYPONYM,
+                                SemanticRelationType.INSTANCE_HYPONYM,
+                                SemanticRelationType.MEMBER_HOLONYM, SemanticRelationType.SUBSTANCE_HOLONYM,
+                                SemanticRelationType.PART_HOLONYM, SemanticRelationType.MEMBER_MERONYM,
+                                SemanticRelationType.SUBSTANCE_MERONYM, SemanticRelationType.PART_MERONYM,
+                                SemanticRelationType.ATTRIBUTE,
+                                SemanticRelationType.DERIVATION_RELATED, SemanticRelationType.DOMAIN_TOPIC,
+                                SemanticRelationType.MEMBER_TOPIC, SemanticRelationType.DOMAIN_REGION,
+                                SemanticRelationType.MEMBER_REGION,
+                                SemanticRelationType.DOMAIN_USAGE, SemanticRelationType.MEMBER_USAGE,
+                                SemanticRelationType.ENTAILMENT, SemanticRelationType.CAUSE,
+                                SemanticRelationType.ALSO_SEE,
+                                SemanticRelationType.VERB_GROUP, SemanticRelationType.SIMILAR_TO,
+                                SemanticRelationType.PARTICIPLE_OF_VERB]
 
     @staticmethod
     def getSemanticTag(tag: str) -> SemanticRelationType:
@@ -41,9 +41,9 @@ cdef class SemanticRelation(Relation):
             Semantic relation type
         """
         cdef int i
-        for i in range(len(SemanticRelation.semanticDependencyTags)):
-            if tag == SemanticRelation.semanticDependency[i]:
-                return SemanticRelation.semanticDependencyTags[i]
+        for i in range(len(SemanticRelation.semantic_dependency_tags)):
+            if tag == SemanticRelation.semantic_dependency[i]:
+                return SemanticRelation.semantic_dependency_tags[i]
         return None
 
     @staticmethod
@@ -114,13 +114,13 @@ cdef class SemanticRelation(Relation):
         """
         super().__init__(name)
         if toIndex is not None:
-            self.__toIndex = toIndex
+            self.__to_index = toIndex
         else:
-            self.__toIndex = 0
+            self.__to_index = 0
         if isinstance(relationType, str):
-            self.__relationType = SemanticRelation.getSemanticTag(relationType)
+            self.__relation_type = SemanticRelation.getSemanticTag(relationType)
         elif isinstance(relationType, SemanticRelationType):
-            self.__relationType = relationType
+            self.__relation_type = relationType
 
     def __eq__(self, other):
         """
@@ -136,8 +136,8 @@ cdef class SemanticRelation(Relation):
         bool
             True if this object is the same as the obj argument; False otherwise.
         """
-        return self.name == other.name and self.__relationType == other.__relationType and \
-               self.__toIndex == other.__toIndex
+        return self.name == other.name and self.__relation_type == other.__relation_type and \
+               self.__to_index == other.__to_index
 
     cpdef int toIndex(self):
         """
@@ -148,7 +148,7 @@ cdef class SemanticRelation(Relation):
         int
             index value.
         """
-        return self.__toIndex
+        return self.__to_index
 
     cpdef object getRelationType(self):
         """
@@ -159,7 +159,7 @@ cdef class SemanticRelation(Relation):
         SemanticRelationType
             semantic relation type
         """
-        return self.__relationType
+        return self.__relation_type
 
     cpdef setRelationType(self, object relationType):
         """
@@ -170,7 +170,7 @@ cdef class SemanticRelation(Relation):
         relationType : SemanticRelationType
             semantic relation type.
         """
-        self.__relationType = relationType
+        self.__relation_type = relationType
 
     cpdef str getTypeAsString(self):
         """
@@ -181,8 +181,8 @@ cdef class SemanticRelation(Relation):
         str
             String semantic relation type
         """
-        if self.__relationType is not None:
-            return self.__relationType.name
+        if self.__relation_type is not None:
+            return self.__relation_type.name
         else:
             return None
 
@@ -195,4 +195,7 @@ cdef class SemanticRelation(Relation):
         str
             Semantic relation types and names
         """
+        return self.getTypeAsString() + "->" + self.name
+
+    def __repr__(self):
         return self.getTypeAsString() + "->" + self.name

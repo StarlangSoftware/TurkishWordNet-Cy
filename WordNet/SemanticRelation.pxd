@@ -3,8 +3,8 @@ from WordNet.Relation cimport Relation
 
 cdef class SemanticRelation(Relation):
 
-    cdef object __relationType
-    cdef int __toIndex
+    cdef object __relation_type
+    cdef int __to_index
 
     cpdef int toIndex(self)
     cpdef object getRelationType(self)

@@ -20,7 +20,7 @@ cdef class SynSet:
         self.__definition = []
         self.__pos = None
         self.__example = None
-        self.__wikiPage = None
+        self.__wiki_page = None
 
     def __eq__(self, other) -> bool:
         """
@@ -276,7 +276,7 @@ cdef class SynSet:
         note : str
             String wiki page to be set
         """
-        self.__wikiPage = wikiPage
+        self.__wiki_page = wikiPage
 
     cpdef str getWikiPage(self):
         """
@@ -287,7 +287,7 @@ cdef class SynSet:
         str
             String wiki page
         """
-        return self.__wikiPage
+        return self.__wiki_page
 
     cpdef addRelation(self, Relation relation):
         """
@@ -525,10 +525,13 @@ cdef class SynSet:
                 outFile.write("<ILR>" + relation.getName() + "<TYPE>" + relation.getTypeAsString() + "</TYPE></ILR>")
             elif isinstance(relation, SemanticRelation):
                 outFile.write("<SR>" + relation.getName() + "<TYPE>" + relation.getTypeAsString() + "</TYPE></SR>")
-        if self.__wikiPage is not None:
-            outFile.write("<WIKI>" + self.__wikiPage + "</WIKI>")
+        if self.__wiki_page is not None:
+            outFile.write("<WIKI>" + self.__wiki_page + "</WIKI>")
         if len(self.__definition) > 0:
             outFile.write("<DEF>" + self.getLongDefinition() + "</DEF>")
         if self.__example is not None:
             outFile.write("<EXAMPLE>" + self.__example + "</EXAMPLE>")
         outFile.write("</SYNSET>\n")
+
+    def __repr__(self):
+        return f"{self.__id} {self.__pos} {self.__synonym} {self.__definition}"

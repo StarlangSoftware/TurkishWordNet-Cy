@@ -5,7 +5,7 @@ cdef class Literal:
 
     cdef str name
     cdef int sense
-    cdef str synSetId
+    cdef str syn_set_id
     cdef str origin
     cdef list relations
 

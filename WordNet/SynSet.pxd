@@ -14,7 +14,7 @@ cdef class SynSet:
     cdef Synonym __synonym
     cdef list __relations
     cdef str __note
-    cdef str __wikiPage
+    cdef str __wiki_page
     cdef int __bcs
 
     cpdef str getId(self)
