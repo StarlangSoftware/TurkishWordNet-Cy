@@ -8,6 +8,7 @@ cdef class Literal:
     cdef str syn_set_id
     cdef str origin
     cdef list relations
+    cdef int group_no
 
     cpdef str getSynSetId(self)
     cpdef str getName(self)
@@ -24,3 +25,5 @@ cdef class Literal:
     cpdef setName(self, str name)
     cpdef setSynSetId(self, str synSetId)
     cpdef saveAsXml(self, outfile)
+    cpdef int getGroupNo(self)
+    cpdef setGroupNo(self, int group_no)

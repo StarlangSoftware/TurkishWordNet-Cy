@@ -13,3 +13,4 @@ cdef class Synonym:
     cpdef bint containsLiteral(self, str literalName)
     cpdef removeLiteral(self, Literal toBeRemoved)
     cpdef saveAsXml(self, outFile)
+    cpdef list getUniqueLiterals(self)

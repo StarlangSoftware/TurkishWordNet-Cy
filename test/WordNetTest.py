@@ -1,5 +1,6 @@
 import unittest
 
+from DataStructure.CounterHashMap import CounterHashMap
 from Dictionary.Pos import Pos
 
 from WordNet.WordNet import WordNet
@@ -32,6 +33,26 @@ class WordNetTest(unittest.TestCase):
                 if synSet.getSynonym().getLiteral(i).getOrigin() is not None:
                     count = count + 1
         self.assertEquals(3981, count)
+
+    def test_TotalGroupedLiterals(self):
+        count = 0
+        for synSet in self.turkish.synSetList():
+            for i in range(synSet.getSynonym().literalSize()):
+                if synSet.getSynonym().getLiteral(i).getGroupNo() != 0:
+                    count = count + 1
+        self.assertEqual(5973, count)
+
+    def test_GroupSize(self):
+        groups = CounterHashMap()
+        for synSet in self.turkish.synSetList():
+            literal_groups = synSet.getSynonym().getUniqueLiterals()
+            for synonym in literal_groups:
+                if synonym.getLiteral(0).getGroupNo() != 0:
+                    groups.put(synonym.literalSize())
+        self.assertEqual(0, groups.count(1))
+        self.assertEqual(2949, groups.count(2))
+        self.assertEqual(21, groups.count(3))
+        self.assertEqual(3, groups.count(4))
 
     def test_LiteralList(self):
         self.assertEqual(82275, len(self.turkish.literalList()))
