@@ -8,8 +8,8 @@ from Cython.Build import cythonize
 setup(
     ext_modules=cythonize(["WordNet/*.pyx", "WordNet/Similarity/*.pyx"],
                           compiler_directives={'language_level': "3"}),
-    name='NlpToolkit-WordNet-Cy',
-    version='1.0.13',
+    name='nlptoolkit-wordnet-cy',
+    version='1.0.14',
     packages=['WordNet', 'WordNet.Similarity', 'WordNet.data'],
     package_data={'WordNet': ['*.pxd', '*.pyx', '*.c', '*.py'],
                   'WordNet.Similarity': ['*.pxd', '*.pyx', '*.c'],

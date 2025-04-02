@@ -342,7 +342,7 @@ cdef class WordNet:
         cdef Literal current
         cdef SynSet syn_set
         for current in self.__literal_list[literal]:
-            syn_set = self.getSynSetWithId(current.getSynSetId)
+            syn_set = self.getSynSetWithId(current.getSynSetId())
             if syn_set is not None and syn_set.getPos() == pos:
                 result.append(syn_set)
 
